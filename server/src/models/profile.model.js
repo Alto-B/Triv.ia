@@ -5,6 +5,18 @@ const profileSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    attempted: {
+        type: Number,
+        default: 0
+    },
+    correct: {
+        type: Number,
+        default: 0
+    },
+    score: {
+        type: Number,
+        default: 0
+    }
 })
 
 const register = mongoose.model('profile', profileSchema);
