@@ -3,9 +3,10 @@ const cors = require('cors')
 const bodyParser = require("body-parser");
 
 const database = require('./config/database')
-const { validate } = require('./src/utilities/token')
+const socket = require('./src/socket/socket')
 const router = require('./src/api/routes')
-const {rssParse} = require('./src/rssdata/rss-generate')
+
+const { validate } = require('./src/utilities/token')
 
 const app = express()
 const port = 5000;
@@ -16,8 +17,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(validate)
 app.use(router);
 
-app.listen(port, async () => {
+app.listen(port, () => {
     console.log(`Server running on port ${port}`);
-    let topics = await rssParse();
-    console.log(topics)
 })

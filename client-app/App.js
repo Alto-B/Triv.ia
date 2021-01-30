@@ -1,21 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
+import { SocketProvider } from './src/SocketProvider';
+import { Provider as PaperProvider } from 'react-native-paper';
+import NavStack from './src/stacks/NavStack';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Helloooooogit </Text>
-      <StatusBar style="auto" />
-    </View>
+    <SocketProvider>
+      <PaperProvider>
+        <NavStack/>
+      </PaperProvider>
+    </SocketProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
