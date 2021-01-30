@@ -6,7 +6,5 @@ module.exports = {
     // dbAdmin
     // fH38SXAsBJODITM9
 
-    api: {
-        key: "3YPHcTH|y]y]W}i"
-    }
+    key: "3YPHcTH|y]y]W}i"
 }
