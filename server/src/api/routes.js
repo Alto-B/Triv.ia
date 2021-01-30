@@ -5,16 +5,19 @@ const { createToken } = require("../utilities/token")
 
 // Models
 const User = require("../models/user.model")
+const Event = require("../models/event.model")
+const Question = require("../models/question.model")
+const Answer = require("../models/answer.model")
 
 const router = express.Router()
 
-// HELPERS
+// HELPERS -----------------
 const sendErr = (res, message) => (
     res.status(400).json({message})
 )
 
-// AUTH ROUTES
-router.post('/login', async (req, res) => {
+// AUTH ROUTES -----------------
+router.post('/api/login', async (req, res) => {
     let {username, password} = req.body;
     let user = await User.findOne({username});
 
@@ -35,7 +38,7 @@ router.post('/login', async (req, res) => {
     })
 })
 
-router.post('/signup', async (req, res) => {
+router.post('/api/signup', async (req, res) => {
     let {username, password} = req.body;
     let user = await User.findOne({username});
 
@@ -54,10 +57,62 @@ router.post('/signup', async (req, res) => {
 })
 
 
+// ADMIN ROUTES ----------------
+// Events
+router.get('/api/event', async (req, res) => {   
+    let events = await Event.find({adminID: req.userID})
+    res.status(200).json({events})
+})
 
-//
-router.get('/c', (req, res) => {
-    res.send("hello wolasdasd")
+
+router.post('/api/event', async (req, res) => {
+    const { name } = req.body
+
+    let event = await new Event({name, adminID: req.userID})
+    event.save()
+
+    res.status(200).json({event})
+})
+
+// Question
+router.get('/api/question', async (req, res) => {  
+    const { eventID } = req.body 
+    let questions = await Question.find({eventID})
+    let results = []
+
+    for(let i=0; i<questions.length; i++) {
+        let questionID = questions[i].id
+        let answers = await Answer.find({questionID})
+        
+        results.push({
+            ...questions[i]._doc,
+            answers
+        })
+    }
+
+    res.status(200).json({results})
+})
+
+router.post('/api/question', async (req, res) => {  
+    const { eventID, prompt } = req.body 
+    
+    let questions = await Question.find({eventID})
+    let order = questions.length + 1;
+
+    let question = await new Question({eventID, prompt, order})
+    question.save()
+
+    res.status(200).json({question})
+})
+
+// Answer
+router.post('/api/answer', async (req, res) => {  
+    const { questionID, text, correct } = req.body 
+
+    let answer = await new Answer({questionID, text, correct})
+    answer.save()
+
+    res.status(200).json({answer})
 })
 
 module.exports = router
