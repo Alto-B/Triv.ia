@@ -31,8 +31,9 @@ const getLeaderboard = async () => {
         let profile = await Profile.findOne({userID: user.id})
 
         result.push({
+            userID: user.id,
             username: user.username,
-            points: profile.points,
+            score: profile.score,
             correct: profile.correct,
             attempted: profile.attempted
         })
@@ -43,11 +44,9 @@ const getLeaderboard = async () => {
 
 server.on("connection", socket => {
     const { id } = socket.client;
-    console.log("Client connected", id)
 
     // REGISTER --------
     socket.on("new-game", async (eventID) => {
-        console.log("new game")
         game = {
             ...EMPTY_GAME,
             eventID,
@@ -57,7 +56,6 @@ server.on("connection", socket => {
 
     socket.on("new-player", async (playerID) => {
         if(game) {
-            console.log("new player")
             game.players[id] = playerID
             let profile = new Profile({userID: playerID})         
             await profile.save()
@@ -69,7 +67,6 @@ server.on("connection", socket => {
     // ADMIN ----------
     // nextQuestion() -- increment step, notify all players, check if game done
     socket.on("next-question", async () => {
-        console.log("nextquestion")
         game.step += 1
 
         if(game.step >= game.questions.length) {
@@ -89,20 +86,15 @@ server.on("connection", socket => {
     // PLAYER ----------
     // answerQuestion() -- updatePlayer stats
     socket.on("answer-question", async (answerID) => {
-        console.log("\n\n\ngoon answered:", answerID)
         const {players, questions, step} = game
 
         let userID = players[id]
-        console.log(userID)
         let profile = await Profile.findOne({userID})
 
         profile.attempted += 1
 
         let correct;
         for(let i=0; i<questions[step].answers.length; i++) {
-            // not sure if id is retrieved properly
-
-            console.log("compare:", questions[step].answers[i]._id, answerID)
             if(questions[step].answers[i]._id == answerID) {
                 correct = true;
                 break;
@@ -125,8 +117,6 @@ server.on("connection", socket => {
     })
 
     socket.on("disconnect", () => {
-        console.log("Client disonnected")
-
         if(game && game.players[id]) delete game.players[id]
     })
 });

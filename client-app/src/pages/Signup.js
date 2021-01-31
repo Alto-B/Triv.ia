@@ -1,7 +1,10 @@
 import React, { useContext, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 import { Button, Title, Text, TextInput } from 'react-native-paper';
 import { SocketContext } from '../SocketProvider';
+
+import joinImg from "../../assets/join.png"
+
 
 export default function Signup({ navigation }) {
   const { user, authenticate } =  useContext(SocketContext);
@@ -25,6 +28,8 @@ export default function Signup({ navigation }) {
       >
           triv.ia
         </Title>
+
+        <Image style={{width: 400, height: 300}} source={joinImg} resizeMode="contain"/>
 
       <View style={styles.form}>
         <TextInput
@@ -77,7 +82,6 @@ const styles = StyleSheet.create({
 
   form: {
       width: "100%",
-      paddingTop: 300,
       paddingBottom: 20
   },
 

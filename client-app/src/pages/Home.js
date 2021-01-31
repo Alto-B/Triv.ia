@@ -1,12 +1,21 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Image } from 'react-native';
 import { SocketContext } from '../SocketProvider';
-import { Title, ProgressBar, Text, Button, Colors  } from 'react-native-paper'
+import { Title, DataTable, Text, Button, Colors, TextInput  } from 'react-native-paper'
+
+import lobbyImg from "../../assets/lobby.png"
 
 const colors = ["#9B51E0", "#2F80ED", "#27AE60", "#EB5757"]
 
+const PLACE_SUFFIX = {
+  0: 'last',
+  1: 'st',
+  2: 'nd',
+  3: 'rd'
+}
+
 export default function Home() {
-  const { gameData, ended, setEnded, sendAnswer, connectToSocket } = useContext(SocketContext)
+  const { user, gameData, ended, setEnded, sendAnswer, connectToSocket, report } = useContext(SocketContext)
   const [selected, setSelected] = useState(-1)
   const [submitted, setSubmitted] = useState(false)
 
@@ -15,29 +24,95 @@ export default function Home() {
     setSubmitted(false)
   }, [gameData])
 
-  if(ended) return (
+  const getPlacement = () => {
+    let place = 0;
+    if(!report) return PLACE_SUFFIX[place]
+
+    let lb = [...report.leaderboard].sort((a, b) => b.score - a.score)
+
+    for(let i=0; i<lb.length; i++) {
+      if(lb[i].userID == user) {
+        place = i+1
+        break;
+      }
+    }
+
+    if(!PLACE_SUFFIX[place]) return `${place}th`
+
+    return `${place}${PLACE_SUFFIX[place]}`
+  }
+
+  const renderLobby = () => (
     <View style={styles.container}>
-      <Text>game over</Text>
-      <Button
-          onPress={() => setEnded(false)}
-          mode={"outlined"}
-        >
-          Restart
-      </Button>
+      <View style={styles.lobby}>
+        <Title style={styles.question}>Join a Game</Title>
+        <Title style={styles.prompt}>Use the event code to join</Title>
+
+        <View style={{display: "flex", alignItems: "center"}}>
+        <Image style={{width: 300, height: 300}} source={lobbyImg} resizeMode="cover"/>
+        </View>
+
+        <View>
+        <TextInput
+            autoCapitalize="characters"
+            style={styles.field}
+            label="Event code"
+        />
+
+        <Button
+            onPress={connectToSocket}
+            mode={"outlined"}
+          >
+            Join
+        </Button>
+        </View>
+      </View>
     </View>
   )
 
-  if(!gameData) return (
+  const renderLeaderboard = () => (
     <View style={styles.container}>
-      <Text>Game is starting shortly.</Text>
-      <Button
-          onPress={connectToSocket}
-          mode={"outlined"}
-        >
-          Connect
+      <View style={styles.lobby}>
+        <Title style={styles.question}>Game Over</Title>
+        <Title style={styles.prompt}>You finished {getPlacement()}</Title>
+
+        <DataTable style={{marginBottom: 12}}>
+          <DataTable.Header>
+            <DataTable.Title>Username</DataTable.Title>
+            <DataTable.Title numeric>Score</DataTable.Title>
+            <DataTable.Title numeric>Correct</DataTable.Title>
+            <DataTable.Title numeric>Attempted</DataTable.Title>
+          </DataTable.Header>
+
+          {
+            report?.leaderboard.sort((a, b) => b.score - a.score).map((x, index) => (
+              <DataTable.Row key={index}>
+                <DataTable.Cell>{x.username}</DataTable.Cell>
+                <DataTable.Cell numeric>{x.score}</DataTable.Cell>
+                <DataTable.Cell numeric>{x.correct}</DataTable.Cell>
+                <DataTable.Cell numeric>{x.attempted}</DataTable.Cell>
+              </DataTable.Row>
+            ))
+          }
+          
+        </DataTable>
+
+        <View>
+        <Button
+            onPress={() => setEnded(false)}
+            mode={"outlined"}
+          >
+            Back to Lobby
         </Button>
+        </View>
+      </View>
     </View>
   )
+
+  if(ended) return renderLeaderboard()
+
+  // TODO: returnLobby()
+  if(!gameData) return renderLobby()
 
   const getStyle = (index) => {
     if(selected == index ) {
@@ -127,6 +202,11 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
 
+  field: {
+    marginBottom: 12,
+    backgroundColor: "transparent"
+  },
+
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -135,12 +215,17 @@ const styles = StyleSheet.create({
     padding: 20
   },
 
+  lobby: {
+    width: "100%"
+  },
+
   question: {
-    paddingTop: 140,
+    paddingTop: 40,
     color: "#888"
   },
 
   prompt: {
+    fontSize: 24,
     paddingBottom: 40
   },
 

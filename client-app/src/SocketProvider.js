@@ -16,6 +16,9 @@ export const SocketProvider = ({children}) => {
  
     const [gameData, setGameData] = useState(null)
     const [ended, setEnded] = useState(false)
+    const [connected, setConnected] = useState(false)
+
+    const [report, setReport] = useState(null)
 
     const localAuth = async() => {
         let userID = await AsyncStorage.getItem("user")
@@ -24,6 +27,7 @@ export const SocketProvider = ({children}) => {
 
     const connectToSocket = () => {
         if(user) {
+            //setReport(null)
             let connection = io(SOCKET_URL)
             setSocket(connection)
 
@@ -56,6 +60,9 @@ export const SocketProvider = ({children}) => {
                 console.log(leaderboard)
                 setEnded(true)
                 setGameData(null)
+                setReport({
+                    leaderboard
+                })
             })
         }
     }, [socket])    
@@ -69,6 +76,7 @@ export const SocketProvider = ({children}) => {
                 ended,
                 setEnded,
                 connectToSocket,
+                report,
 
                 sendAnswer: (answerID) => {
                     socket.emit("answer-question", answerID)
