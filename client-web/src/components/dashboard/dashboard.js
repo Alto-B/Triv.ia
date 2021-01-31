@@ -3,38 +3,48 @@ import {makeStyles} from '@material-ui/core/styles';
 import clsx from 'clsx';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
-import Box from '@material-ui/core/Box';
+//import Box from '@material-ui/core/Box';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
+//import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Link from '@material-ui/core/Link';
+//import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import NotificationsIcon from '@material-ui/icons/Notifications';
+//import NotificationsIcon from '@material-ui/icons/Notifications';
 import UserActivity from './charts/user-activity';
 import Options from './toolbaroptions/Options';
 import Leaderboard from './leaderboard/Leaderboard';
+import AddIcon from '@material-ui/icons/Add';
+import BallotIcon from '@material-ui/icons/Ballot';
+import EventCard from './Event-Cards/EventCard';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import {useForm} from 'react-hook-form';
 //import { mainListItems, secondaryListItems } from './listItems';
 
-function Copyright() {
-    return (
-      <Typography variant="body2" color="textSecondary" align="center">
-        {'Copyright © '}
-        <Link color="inherit" href="https://material-ui.com/">
-          Your Website
-        </Link>{' '}
-        {new Date().getFullYear()}
-        {'.'}
-      </Typography>
-    );
-  }
+// function Copyright() {
+//     return (
+//       <Typography variant="body2" color="textSecondary" align="center">
+//         {'Copyright © '}
+//         <Link color="inherit" href="https://material-ui.com/">
+//           Your Website
+//         </Link>{' '}
+//         {new Date().getFullYear()}
+//         {'.'}
+//       </Typography>
+//     );
+//   }
   
 
 
@@ -117,12 +127,27 @@ const useStyles = makeStyles((theme) => ({
       fixedHeight: {
         height: 240,
       },
+      field: {
+        marginBottom: 10
+      }
 }))
 
 const Dashboard = () => {
     const classes = useStyles()
     const [open, setOpen] = useState(true);
     const [events, setEvents] = useState(false);
+    const [eventList, setEventList] = useState([1,2,3,4,5,6,7]);
+
+    const [openD, setOpenD] = useState(false)
+    const {register, handleSubmit} = useForm();
+
+    const handleClickOpen = () => {
+        setOpenD(true);
+      };
+    
+    const handleClose = () => {
+        setOpenD(false);
+    };
 
     const handleEventOn = () => {
         console.log("activated")
@@ -141,10 +166,15 @@ const Dashboard = () => {
         setOpen(false);
     };
 
+    const onDSubmit = (data) => {
+      handleClose();
+      console.log(data);
+    }
+
     const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
     return ( 
-            <div className={classes.root}>
+    <div className={classes.root}>
       <CssBaseline />
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
@@ -160,11 +190,35 @@ const Dashboard = () => {
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             Dashboard
           </Typography>
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
+          {events? (
+            <div>
+          <IconButton color="inherit" onClick={handleClickOpen}>
+            <AddIcon fontSize="large"></AddIcon>
           </IconButton>
+          <Dialog open={openD} onClose={handleClose} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Create Event</DialogTitle>
+                <DialogContent>
+                <DialogContentText>
+                    Use this Dialogue to create Events
+                </DialogContentText>
+                  <form onSubmit={handleSubmit(onDSubmit)} style={{alignContent: 'center', textAlign: 'center'}}>
+                    <TextField variant="outlined" fullWidth label="Event Name" inputRef={register} className={classes.field}></TextField>
+                    <TextField variant="outlined" fullWidth label="Description" inputRef={register} className={classes.field} multiline rows={4}></TextField>
+                    <TextField variant="outlined" fullWidth label="Image URL" inputRef={register} className={classes.field}></TextField>
+
+                    <br></br>
+                    <Button type="submit" variant="outlined" style={{ marginTop: 5, marginBottom: 5}}>Submit</Button>
+                    {/* <Button onClick={handleClose} variant="outlined" style={{float: "left", marginTop: 5, marginBottom: 5}}>cancel</Button> */}
+                  </form>
+                </DialogContent>
+            </Dialog>
+          
+          </div>):
+          <IconButton color="inherit">
+            <BallotIcon fontSize="large"></BallotIcon>
+          </IconButton> 
+          }
+          
         </Toolbar>
       </AppBar>
       <Drawer
@@ -186,7 +240,27 @@ const Dashboard = () => {
         <Divider />
         {/* <List>{secondaryListItems}</List> */}
       </Drawer>
-      {events? <main className={classes.content}></main>: (
+      {events?
+      <div >
+        
+        
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+            <Container maxWidth="lg" className={classes.container}>
+              <Grid container spacing={3}>
+                {eventList.map(x => (
+                  <Grid item xs={4} key={x}>
+                    <EventCard></EventCard>
+                  </Grid>
+                ))}
+              </Grid>
+            </Container>
+
+          
+        </main>
+      </div> 
+      
+      : (
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>

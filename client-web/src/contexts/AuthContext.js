@@ -13,7 +13,7 @@ export const AuthProvider = ({children}) => {
         if(localStorage.getItem('token')){
             history.push('/app/dashboard')
         }
-    },[])
+    },[history])
     
     return(
         <AuthContext.Provider value={{
