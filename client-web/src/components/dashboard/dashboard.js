@@ -141,6 +141,8 @@ const Dashboard = () => {
 
     const {API, eventList, setEventList} = useContext(AuthContext);
 
+    const [lb, setLb] = useState(null)
+
     const [openD, setOpenD] = useState(false)
     const {register, handleSubmit} = useForm();
 
@@ -178,16 +180,29 @@ const Dashboard = () => {
       })
     }
 
+    const getLeaderboard = () => {
+      axios.get(`${API}/leaderboard`, {headers:{'token': localStorage.getItem('token')}}).then(result => {
+        setLb(result.data.result);
+      })
+      .catch(error=>{
+
+      })
+    }
+
     useEffect(() => {
       getEvents();
+      getLeaderboard();
     },[])
 
     const onDSubmit = (data) => {
       //const {name, image, description} = data; 
+
+      let url = (data.link) ? `${API}/loadRSS` : `${API}/event`;
+
       console.log(data);
       handleClose();
       
-      axios.post(`${API}/event`,data, {headers:{'token': localStorage.getItem('token')}}).then(result => {
+      axios.post(url,data, {headers:{'token': localStorage.getItem('token')}}).then(result => {
         getEvents();
       })
       .catch(error => {
@@ -212,7 +227,7 @@ const Dashboard = () => {
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            Dashboard
+            
           </Typography>
           {events? (
             <div>
@@ -226,9 +241,10 @@ const Dashboard = () => {
                     Use this Dialogue to create Events
                 </DialogContentText>
                   <form onSubmit={handleSubmit(onDSubmit)} style={{alignContent: 'center', textAlign: 'center'}}>
-                    <TextField variant="outlined" name="name" fullWidth label="Event Name" inputRef={register} className={classes.field}></TextField>
-                    <TextField variant="outlined" name="description" fullWidth label="Description" inputRef={register} className={classes.field} multiline rows={4}></TextField>
-                    <TextField variant="outlined" name="image" fullWidth label="Image URL" inputRef={register} className={classes.field}></TextField>
+                    <TextField required  variant="outlined" name="name" fullWidth label="Event Name" inputRef={register} className={classes.field}></TextField>
+                    <TextField required  variant="outlined" name="description" fullWidth label="Description" inputRef={register} className={classes.field} multiline rows={4}></TextField>
+                    <TextField required  variant="outlined" name="image" fullWidth label="Image URL" inputRef={register} className={classes.field}></TextField>
+                    <TextField variant="outlined" name="link" fullWidth label="RSS Feed" inputRef={register} className={classes.field} helperText="Optional: Import questions from RSS feed"></TextField>
 
                     <br></br>
                     <Button type="submit" variant="outlined" style={{ marginTop: 5, marginBottom: 5}}>Submit</Button>
@@ -270,10 +286,12 @@ const Dashboard = () => {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>
-              <Grid container spacing={3}>
+              <Grid container spacing={2}>
                 {eventList.map((x, index) => (
-                  <Grid item xs={4} key={index}>
-                    <EventCard name={x.name} image={x.image} index={index} description={x.description}></EventCard>
+                  <Grid item xs={6} key={index}>
+                    
+                      <EventCard name={x.name} image={x.image} index={index} description={x.description} key={index}></EventCard>
+                    
                   </Grid>
                 ))}
               </Grid>
@@ -287,13 +305,13 @@ const Dashboard = () => {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
-          <Grid container spacing={3}>
+          <Grid container spacing={3} style={{overflow: "auto"}}>
             {/* Chart */}
-            <Grid item xs={12} md={8} lg={12}>
+            {/* <Grid item xs={12} md={8} lg={12}>
               <Paper className={fixedHeightPaper}>
                 <UserActivity></UserActivity>
               </Paper>
-            </Grid>
+            </Grid> */}
             {/* Recent Deposits */}
             {/* <Grid item xs={12} md={4} lg={3}>
               <Paper className={fixedHeightPaper}>
@@ -301,9 +319,22 @@ const Dashboard = () => {
               </Paper>
             </Grid> */}
             {/* Recent Orders */}
-            <Grid item xs={12}>
+            <Grid item xs={4}>
+              <Paper className={classes.paper} style={{textAlign: "left"}}>
+                <Typography variant="h4" gutterBottom>Getting Started</Typography>
+                <Typography variant="body1" gutterBottom>
+                  Welcome to triv.ia, a robust platform that leverages trivia games to increase fan engagement.
+                </Typography>
+                <Typography variant="body1">
+                  To get started, select the Events pannel from the sidebar. Here you can create events and questions, and also start organizing the game.
+                </Typography>
+              </Paper>
+            </Grid>
+
+
+            <Grid item xs={8}>
               <Paper className={classes.paper}>
-                <Leaderboard></Leaderboard>
+                <Leaderboard info={lb}></Leaderboard>
               </Paper>
             </Grid>
           </Grid>

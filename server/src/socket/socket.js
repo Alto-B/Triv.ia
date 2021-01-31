@@ -39,6 +39,9 @@ const getLeaderboard = async () => {
         })
     }
 
+    result = result.sort((a, b) => b.score - a.score)
+    result = result.slice(0, Math.min(result.length, 5))
+
     return result
 }
 

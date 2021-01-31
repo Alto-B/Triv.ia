@@ -1,6 +1,5 @@
 const request = require('request');
 const cheerio = require('cheerio');
-const { resolve } = require('path');
 
 const URLS = {
     badminton: 'https://www.gkseries.com/general-knowledge/sports/tennis/1-gk-mcqs-with-answers-on-tennis', 
@@ -10,7 +9,6 @@ const URLS = {
     olympics: 'https://www.gkseries.com/general-knowledge/sports/olympics/1-general-awareness-questions-and-answers-on-olympic-games',
     cricket: 'https://www.gkseries.com/general-knowledge/sports/cricket/1-gk-on-world-cup-cricket-2015',
     wrestling: 'https://www.gkseries.com/general-knowledge/sports/wrestling/1-general-awareness-multiple-choice-questions-and-answers-on-wrestling'
-
 }
 
 const scrapeQuestions = (topic) => {
