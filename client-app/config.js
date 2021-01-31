@@ -1,4 +1,4 @@
 module.exports = {
-    DEV_URL: "http://4d675669aad0.ngrok.io",
-    SOCKET_URL: "http://9e83239690b3.ngrok.io",
+    DEV_URL: "http://54d73356b291.ngrok.io",
+    SOCKET_URL: "http://6a81f3ad6aa1.ngrok.io",
 };

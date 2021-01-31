@@ -4,8 +4,9 @@ import { AuthContext } from '../../contexts/AuthContext';
 import Leaderboard from '../dashboard/leaderboard/Leaderboard';
 import { useHistory } from 'react-router-dom';
 import {makeStyles} from '@material-ui/core/styles'
+import Paper from '@material-ui/core/Paper';
 
-const SOCKET_URL = "http://ab408af5a2da.ngrok.io"
+const SOCKET_URL = "http://6a81f3ad6aa1.ngrok.io"
 const io = require("socket.io-client");
 
 const useStyles = makeStyles((theme) => ({
@@ -37,6 +38,7 @@ const Game = () => {
     const [gameData, setGameData] = useState(null)
 
     const [timer, setTimer] = useState(0)
+    const [lb, setLb] = useState(null)
 
     useEffect(() => {
         if(started) {
@@ -72,6 +74,7 @@ const Game = () => {
                 console.log("game over")
                 setEnded(true)
                 setStarted(false)
+                setLb(leaderboard)
             })
         }
     }, [socket])
@@ -136,7 +139,7 @@ const Game = () => {
             {started || ended ? null : <Button variant="contained" color="primary" size="large" onClick={startGame} className={classes.button}>Start</Button>}
             
             {started ? renderGame() : null}
-            {ended ? <Leaderboard/> : null}
+            {ended ? <Paper><Leaderboard info={lb}/></Paper> : null}
             {ended ? <Button onClick={() => history.push("/app/dashboard")}>Go Back</Button> : null}
         </div>
     );
