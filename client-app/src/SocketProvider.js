@@ -13,34 +13,23 @@ export const SocketContext = React.createContext({
 export const SocketProvider = ({children}) => {
     const [socket, setSocket] = useState(null)
     const [user, setUser] = useState(null)
-
-    const [question, setQuestion] = useState({
-        step: 0,
-        totalSteps: 10,
-        prompt: "Who won the NBA Championship in 2019/2020 season?",
-        answers: [
-            {
-                '_id': "1234",
-                text: "Raptops"
-            },
-            {
-                '_id': "1234",
-                text: "Nuggets"
-            },
-            {
-                '_id': "1234",
-                text: "Thunder"
-            },
-            {
-                '_id': "1234",
-                text: "Barcelona"
-            },
-        ]
-    })
+ 
+    const [gameData, setGameData] = useState(null)
+    const [ended, setEnded] = useState(false)
 
     const localAuth = async() => {
         let userID = await AsyncStorage.getItem("user")
         setUser(userID)
+    }
+
+    const connectToSocket = () => {
+        if(user) {
+            let connection = io(SOCKET_URL)
+            setSocket(connection)
+
+            connection.emit("new-player", user)
+            console.log("registered with socket")
+        }
     }
 
     useEffect(() => {
@@ -54,19 +43,19 @@ export const SocketProvider = ({children}) => {
     }, [])
 
     useEffect(() => {
-        if(user) {
-            let connection = io(SOCKET_URL)
-            setSocket(connection)
-
-            connection.emit("new-player", user)
-            console.log("registered with socket")
-        }
-    }, [user])
-
-    useEffect(() => {
         if(socket) {
             socket.on("cannot-join", () => {
                 console.log("could not join")
+            })
+
+            socket.on("new-question", newData => {
+                setGameData(newData)
+            })
+
+            socket.on("game-end", (leaderboard) => {
+                console.log(leaderboard)
+                setEnded(true)
+                setGameData(null)
             })
         }
     }, [socket])    
@@ -76,7 +65,14 @@ export const SocketProvider = ({children}) => {
             value={{
                 socket,
                 user,
-                question,
+                gameData,
+                ended,
+                setEnded,
+                connectToSocket,
+
+                sendAnswer: (answerID) => {
+                    socket.emit("answer-question", answerID)
+                },
 
                 authenticate: async (username, password, path="login") => {
                     try {

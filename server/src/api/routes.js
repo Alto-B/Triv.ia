@@ -76,7 +76,10 @@ router.post('/api/event', async (req, res) => {
 })
 
 // Question
-router.get('/api/question', getQuestions)
+router.get('/api/question', async(req, res) => {
+    let results = await getQuestions(req.body.eventID)
+    res.status(200).json({results})
+})
 
 router.post('/api/question', async (req, res) => {  
     const { eventID, prompt } = req.body 

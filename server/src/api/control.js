@@ -2,8 +2,7 @@ const Question = require("../models/question.model")
 const Answer = require("../models/answer.model")
 
 module.exports = {
-    getQuestions: async (req, res) => {  
-        const { eventID } = req.body 
+    getQuestions: async (eventID) => {  
         let questions = await Question.find({eventID}).sort("order")
         let results = []
     
@@ -17,6 +16,6 @@ module.exports = {
             })
         }
     
-        res.status(200).json({results})
+        return results
     }
 }

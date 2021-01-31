@@ -6,6 +6,9 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
     const [userId, setUserId] = useState("");
+    const [eventList, setEventList] = useState([]);
+    const [curEvent, setCurEvent] = useState(-1)
+
     const API = "http://localhost:5000/api";
     const history = useHistory();
 
@@ -19,6 +22,12 @@ export const AuthProvider = ({children}) => {
         <AuthContext.Provider value={{
             userId,
             API,
+            eventList,
+            setEventList,
+
+            curEvent,
+            setCurEvent,
+
             login: async (args) => {
                 
                 const {username, password} = args;

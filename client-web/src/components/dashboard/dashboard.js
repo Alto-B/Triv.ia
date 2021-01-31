@@ -138,9 +138,8 @@ const Dashboard = () => {
     const classes = useStyles()
     const [open, setOpen] = useState(true);
     const [events, setEvents] = useState(false);
-    const [eventList, setEventList] = useState([]);
 
-    const {API} = useContext(AuthContext);
+    const {API, eventList, setEventList} = useContext(AuthContext);
 
     const [openD, setOpenD] = useState(false)
     const {register, handleSubmit} = useForm();
@@ -274,7 +273,7 @@ const Dashboard = () => {
               <Grid container spacing={3}>
                 {eventList.map((x, index) => (
                   <Grid item xs={4} key={index}>
-                    <EventCard></EventCard>
+                    <EventCard name={x.name} image={x.image} index={index} description={x.description}></EventCard>
                   </Grid>
                 ))}
               </Grid>
