@@ -2,6 +2,7 @@ const express = require('express')
 const bcrypt = require("bcrypt");
 const keys = require("../../config/keys");
 const { createToken } = require("../utilities/token")
+const { getQuestions } = require("./control")
 
 // Models
 const User = require("../models/user.model")
@@ -75,23 +76,7 @@ router.post('/api/event', async (req, res) => {
 })
 
 // Question
-router.get('/api/question', async (req, res) => {  
-    const { eventID } = req.body 
-    let questions = await Question.find({eventID})
-    let results = []
-
-    for(let i=0; i<questions.length; i++) {
-        let questionID = questions[i].id
-        let answers = await Answer.find({questionID})
-        
-        results.push({
-            ...questions[i]._doc,
-            answers
-        })
-    }
-
-    res.status(200).json({results})
-})
+router.get('/api/question', getQuestions)
 
 router.post('/api/question', async (req, res) => {  
     const { eventID, prompt } = req.body 

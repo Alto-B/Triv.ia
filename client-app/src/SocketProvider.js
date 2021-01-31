@@ -13,7 +13,30 @@ export const SocketContext = React.createContext({
 export const SocketProvider = ({children}) => {
     const [socket, setSocket] = useState(null)
     const [user, setUser] = useState(null)
-    const [registered, setRegistered] = useState(false)
+
+    const [question, setQuestion] = useState({
+        step: 0,
+        totalSteps: 10,
+        prompt: "Who won the NBA Championship in 2019/2020 season?",
+        answers: [
+            {
+                '_id': "1234",
+                text: "Raptops"
+            },
+            {
+                '_id': "1234",
+                text: "Nuggets"
+            },
+            {
+                '_id': "1234",
+                text: "Thunder"
+            },
+            {
+                '_id': "1234",
+                text: "Barcelona"
+            },
+        ]
+    })
 
     const localAuth = async() => {
         let userID = await AsyncStorage.getItem("user")
@@ -26,7 +49,6 @@ export const SocketProvider = ({children}) => {
 
     useEffect(() => {
         return () => {
-            if(!socket) console.log('oogabooga')
             socket?.disconnect();
         }
     }, [])
@@ -41,11 +63,20 @@ export const SocketProvider = ({children}) => {
         }
     }, [user])
 
+    useEffect(() => {
+        if(socket) {
+            socket.on("cannot-join", () => {
+                console.log("could not join")
+            })
+        }
+    }, [socket])    
+
     return(
         <SocketContext.Provider
             value={{
                 socket,
                 user,
+                question,
 
                 authenticate: async (username, password, path="login") => {
                     try {
