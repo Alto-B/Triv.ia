@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import { AuthContext } from '../../contexts/AuthContext';
 
 function Copyright() {
   return (
@@ -44,10 +45,24 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  checkbox: {
+    float: "right"
+  }
 }));
 
 export default function SignIn() {
   const classes = useStyles();
+
+  const {login} = useContext(AuthContext);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
+
+    login({username, password});
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -59,16 +74,16 @@ export default function SignIn() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+        <form onSubmit={handleSubmit} className={classes.form} noValidate>
           <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
+            id="username"
+            label="Username"
+            name="username"
+            autoComplete="username"
             autoFocus
           />
           <TextField
@@ -85,6 +100,8 @@ export default function SignIn() {
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
+            className={classes.checkbox}
+            
           />
           <Button
             type="submit"
@@ -102,7 +119,7 @@ export default function SignIn() {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link href="/app/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
