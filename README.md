@@ -2,7 +2,7 @@
 
 <img src="https://i.imgur.com/BHff6dn.png"/>
 
-> A web based trivia application for the Ross video challenge at cuHacking 2021. Triv.ia is a robust platform that leverages trivia games to increase fan engagement. <br/> Made-by: Shrish Mohapatra ([shrish-mohapatra](https://github.com/shrish-mohapatra)), Kevin Bui ([Alto-B](https://github.com/Alto-B)), Mandar Deshpande ([yyassin](https://github.com/MandarGD))
+> A web based trivia application for the Ross video challenge at cuHacking 2021. Triv.ia is a robust platform that leverages trivia games to increase fan engagement. <br/> Made-by: Shrish Mohapatra ([shrish-mohapatra](https://github.com/shrish-mohapatra)), Kevin Bui ([Alto-B](https://github.com/Alto-B)), Mandar Deshpande ([MandarGD](https://github.com/MandarGD))
 
 ## Features
 - Generate trivia questions from parsing RSS feeds and webscraping
