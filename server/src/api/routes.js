@@ -67,9 +67,9 @@ router.get('/api/event', async (req, res) => {
 
 
 router.post('/api/event', async (req, res) => {
-    const { name } = req.body
+    const { name, image, description } = req.body
 
-    let event = await new Event({name, adminID: req.userID})
+    let event = await new Event({name, adminID: req.userID, image, description})
     event.save()
 
     res.status(200).json({event})

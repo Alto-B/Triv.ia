@@ -9,6 +9,14 @@ const eventSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    description: {
+        type: String,
+        required: false
+    },
+    image: {
+        type: String,
+        required: false
+    }
 })
 
 const register = mongoose.model('event', eventSchema);

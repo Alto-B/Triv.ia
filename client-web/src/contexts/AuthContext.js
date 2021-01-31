@@ -18,6 +18,7 @@ export const AuthProvider = ({children}) => {
     return(
         <AuthContext.Provider value={{
             userId,
+            API,
             login: async (args) => {
                 
                 const {username, password} = args;

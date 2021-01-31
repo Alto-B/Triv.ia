@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import clsx from 'clsx';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
+import axios from 'axios';
 //import Box from '@material-ui/core/Box';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -31,6 +32,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import {useForm} from 'react-hook-form';
+import {AuthContext} from '../../contexts/AuthContext'
 //import { mainListItems, secondaryListItems } from './listItems';
 
 // function Copyright() {
@@ -136,7 +138,9 @@ const Dashboard = () => {
     const classes = useStyles()
     const [open, setOpen] = useState(true);
     const [events, setEvents] = useState(false);
-    const [eventList, setEventList] = useState([1,2,3,4,5,6,7]);
+    const [eventList, setEventList] = useState([]);
+
+    const {API} = useContext(AuthContext);
 
     const [openD, setOpenD] = useState(false)
     const {register, handleSubmit} = useForm();
@@ -166,9 +170,30 @@ const Dashboard = () => {
         setOpen(false);
     };
 
+    const getEvents = () => {
+      axios.get(`${API}/event`, {headers:{'token': localStorage.getItem('token')}}).then(result => {
+        setEventList(result.data.events);
+      })
+      .catch(error=>{
+
+      })
+    }
+
+    useEffect(() => {
+      getEvents();
+    },[])
+
     const onDSubmit = (data) => {
-      handleClose();
+      //const {name, image, description} = data; 
       console.log(data);
+      handleClose();
+      
+      axios.post(`${API}/event`,data, {headers:{'token': localStorage.getItem('token')}}).then(result => {
+        getEvents();
+      })
+      .catch(error => {
+
+      })
     }
 
     const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
@@ -202,9 +227,9 @@ const Dashboard = () => {
                     Use this Dialogue to create Events
                 </DialogContentText>
                   <form onSubmit={handleSubmit(onDSubmit)} style={{alignContent: 'center', textAlign: 'center'}}>
-                    <TextField variant="outlined" fullWidth label="Event Name" inputRef={register} className={classes.field}></TextField>
-                    <TextField variant="outlined" fullWidth label="Description" inputRef={register} className={classes.field} multiline rows={4}></TextField>
-                    <TextField variant="outlined" fullWidth label="Image URL" inputRef={register} className={classes.field}></TextField>
+                    <TextField variant="outlined" name="name" fullWidth label="Event Name" inputRef={register} className={classes.field}></TextField>
+                    <TextField variant="outlined" name="description" fullWidth label="Description" inputRef={register} className={classes.field} multiline rows={4}></TextField>
+                    <TextField variant="outlined" name="image" fullWidth label="Image URL" inputRef={register} className={classes.field}></TextField>
 
                     <br></br>
                     <Button type="submit" variant="outlined" style={{ marginTop: 5, marginBottom: 5}}>Submit</Button>
@@ -242,14 +267,13 @@ const Dashboard = () => {
       </Drawer>
       {events?
       <div >
-        
-        
+
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>
               <Grid container spacing={3}>
-                {eventList.map(x => (
-                  <Grid item xs={4} key={x}>
+                {eventList.map((x, index) => (
+                  <Grid item xs={4} key={index}>
                     <EventCard></EventCard>
                   </Grid>
                 ))}
